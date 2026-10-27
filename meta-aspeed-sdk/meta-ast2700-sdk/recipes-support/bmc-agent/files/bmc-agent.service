@@ -1,0 +1,17 @@
+[Unit]
+Description=BMC LLM Agent
+After=network-online.target
+Wants=network-online.target
+# 双路径 OR：rwfs 热部署位（常态）与 F2 冻结位（rofs），都不存在时不起服务（避免 restart 风暴）
+ConditionPathExists=|/var/lib/bmc-agent/agent.mjs
+ConditionPathExists=|/usr/share/bmc-agent/agent.mjs
+
+[Service]
+StateDirectory=bmc-agent
+Environment=HOME=/var/lib/bmc-agent
+ExecStart=/usr/bin/node /var/lib/bmc-agent/agent.mjs
+Restart=on-failure
+User=root
+
+[Install]
+WantedBy=multi-user.target
